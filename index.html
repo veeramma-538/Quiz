@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, blue, #acb6e5);
+      padding: 20px;
+      text-align: center;
+    }
+    .quiz-container {
+      background:  palevioletred;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .answers button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .timer {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ff0000;
+    }
+    #leaderboard {
+      margin-top: 20px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    #startScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #quizApp {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="startScreen">
+    <h2>Enter Your Name to Start the Quiz</h2>
+    <input type="text" id="nameInput" placeholder="Your name" />
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div id="quizApp" class="quiz-container">
+    <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
+    <div class="question" id="question">Question text</div>
+    <div class="answers" id="answers"></div>
+    <div class="timer" id="timer">Time left: 10s</div>
+    <div id="leaderboard"></div>
+  </div>
+
+  <script>
+    let username = "";
+    const quizData = [
+      {
+        question: "What is the capital of Canada?",
+        options: ["Berlin", "Ottawa", "Paris", "Rome"],
+        answer: "Ottawa"
+      },
+      {
+        question: "Against which team did India play their first match in the 2011 World Cup?",
+        options: ["Srilanka", "Pakisthan", "Australia", "Bangladesh"],
+        answer: "Srilanka"
+      },
+      {
+        question: "Which language runs in a browser?",
+        options: ["Java", "C", "Python", "JavaScript"],
+        answer: "JavaScript"
+      },
+      {
+        question: "Which tag is used to create a hyperlink in HTML?",
+        options: ["<link>", "<a>", "<href>", "<hyper>"],
+        answer: "<a>"
+      },
+      {
+        question: "What does HTML stand for?",
+        options: ["HyperText Markup Language", "HighText Markup Language", "HyperText Max Language", "HyperText Max Language"],
+        answer: "Cascading Style Sheets"
+      }
+    ];
+
+    let current = 0;
+    let timer;
+    let timeLeft = 10;
+    let score = 0;
+
+    function startQuiz() {
+      const input = document.getElementById("nameInput").value.trim();
+      if (!input) {
+        alert("Please enter your name");
+        return;
+      }
+      username = input;
+      document.getElementById("startScreen").style.display = "none";
+      document.getElementById("quizApp").style.display = "block";
+      document.getElementById("usernameDisplay").textContent = username;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = quizData[current];
+      document.getElementById("question").textContent = q.question;
+      const answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(option);
+        answersDiv.appendChild(btn);
+      });
+      resetTimer();
+    }
+
+    function checkAnswer(selected) {
+      clearInterval(timer);
+      const correct = quizData[current].answer;
+      if (selected === correct) {
+        score++;
+        alert("Correct!");
+      } else {
+        alert(`Wrong! Correct answer is ${correct}`);
+      }
+      current++;
+      if (current < quizData.length) {
+        loadQuestion();
+      } else {
+        document.getElementById("question").textContent = `Quiz Over, ${username}! You scored ${score}/${quizData.length}`;
+        document.getElementById("answers").innerHTML = "Thanks for playing!";
+        document.getElementById("timer").textContent = "";
+        updateLeaderboard();
+      }
+    }
+
+    function startTimer() {
+      timeLeft = 10;
+      document.getElementById("timer").textContent = `Time left: ${timeLeft}s`;
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = `Time left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          alert("Time's up!");
+          checkAnswer("");
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      startTimer();
+    }
+
+    function updateLeaderboard() {
+      const board = document.getElementById("leaderboard");
+      let scores = JSON.parse(localStorage.getItem("quizScores")) || [];
+      scores.push({ name: username, score });
+      scores.sort((a, b) => b.score - a.score);
+      localStorage.setItem("quizScores", JSON.stringify(scores));
+      board.innerHTML = "<h3>Leaderboard</h3>";
+      scores.slice(0, 5).forEach((entry, index) => {
+        board.innerHTML += `<p>${index + 1}. ${entry.name} - ${entry.score}</p>`;
+      });
+    }
+  </script>
+</body>
+</html>
