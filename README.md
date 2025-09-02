@@ -34,14 +34,16 @@ Copy code
 ## 💻 How to Run  
 1. Clone the repository  
    ```bash
-   git clone https://github.com/veeramma-538/quiz-app.git
+   git clone https://github.com/veeramma-538/Quiz.git
 Open the folder and run index.html in any browser.
 
 🔗 Live Demo
 👉 https://qapp-1.netlify.app/
 
 📷 Screenshot
-<img width="633" height="345" alt="Screenshot 2025-09-02 092916" src="https://github.com/user-attachments/assets/8137da2f-fe7e-49a0-91bd-b905d74acf68" />
+
+
+<img width="533" height="245" alt="Screenshot 2025-09-02 092916" src="https://github.com/user-attachments/assets/8137da2f-fe7e-49a0-91bd-b905d74acf68" />
 
 
 
